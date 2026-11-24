@@ -1,0 +1,101 @@
+---
+import './messaging.css';
+
+interface Props {
+	source: string;
+	privacyUrl?: string;
+	privacyText?: string;
+	turnstileSiteKey?: string;
+	endpoint: string;
+	class?: string;
+	disabled?: boolean;
+	submitLabel?: string;
+	variant?: string;
+	noun?: string;
+	formAttributes?: Record<string, string>;
+}
+
+const {
+	source,
+	endpoint,
+	class: className,
+	disabled = false,
+	submitLabel = 'Submit',
+	variant = 'messaging',
+	noun = 'submission',
+	formAttributes = {},
+	privacyUrl,
+	privacyText = 'I will use the information you provide to respond to your inquiry and manage our conversation.',
+	turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY,
+} = Astro.props;
+
+const unavailable = disabled || !turnstileSiteKey;
+const submitted = Astro.url.searchParams.get(variant) === 'sent';
+const prefix = `ehven-${variant}-form`;
+
+const formClass = ['ehven-form', prefix, className]
+	.filter(Boolean)
+	.join(' ');
+---
+
+<form
+	{...formAttributes}
+	class={formClass}
+	action={endpoint}
+	method="post"
+	data-ehven-form
+	data-messaging-astro
+	data-messaging-unavailable={unavailable ? '' : undefined}
+	data-noun={noun}
+>
+	<input type="hidden" name="source" value={source} />
+
+	<slot />
+
+	<label class={`${prefix}__honeypot`} data-form-honeypot aria-hidden="true">
+		<span>Website</span>
+		<input
+			type="text"
+			name="website"
+			autocomplete="off"
+			tabindex="-1"
+		/>
+	</label>
+
+	{!unavailable && (
+		<>
+			<div data-messaging-turnstile data-sitekey={turnstileSiteKey} data-action={variant}></div>
+			<p class={`${prefix}__status`} data-form-status-verification data-kind="error" aria-live="polite" hidden></p>
+			<noscript>Enable JavaScript to complete verification and send this form.</noscript>
+		</>
+	)}
+
+	<p class={`${prefix}__privacy`} data-form-privacy>
+		{privacyText} {privacyUrl && <a href={privacyUrl}>Privacy Policy</a>}
+	</p>
+
+	<p
+		id={`${variant}-status-${source}`}
+		class={`${prefix}__status`}
+		data-form-status
+		data-kind={submitted ? 'success' : unavailable ? 'error' : undefined}
+		aria-live="polite"
+		hidden={!submitted && !unavailable}
+	>
+		{submitted ? `Thank you. Your ${noun} has been sent.` : unavailable ? 'Form delivery is temporarily unavailable.' : ''}
+	</p>
+
+	<button
+		class="ehven-button ehven-button-active"
+		type="submit"
+		disabled
+		aria-disabled={unavailable ? 'true' : undefined}
+		title={unavailable ? 'Form delivery is temporarily unavailable' : undefined}
+	>
+		{submitLabel}
+	</button>
+</form>
+
+<script>
+	import './mount.mjs';
+</script>

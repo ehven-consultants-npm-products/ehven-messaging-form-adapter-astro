@@ -1,0 +1,53 @@
+---
+import { MESSAGING_FIELD_LIMITS } from '@ehven/messaging-form-core';
+interface Props { variant?: string; }
+const { variant = 'messaging' } = Astro.props;
+const prefix = `ehven-${variant}-form`;
+---
+	<div class={`${prefix}__pair`} data-form-pair>
+		<label class="ehven-field">
+			<span>First Name</span>
+			<input
+				type="text"
+				name="first_name"
+				autocomplete="given-name"
+				maxlength={MESSAGING_FIELD_LIMITS.firstName}
+				required
+			/>
+		</label>
+
+		<label class="ehven-field">
+			<span>Last Name</span>
+			<input
+				type="text"
+				name="last_name"
+				autocomplete="family-name"
+				maxlength={MESSAGING_FIELD_LIMITS.lastName}
+				required
+			/>
+		</label>
+	</div>
+
+	<div class={`${prefix}__pair`} data-form-pair>
+		<label class="ehven-field">
+			<span>Your Email</span>
+			<input
+				type="email"
+				name="email"
+				autocomplete="email"
+				maxlength={MESSAGING_FIELD_LIMITS.email}
+				required
+			/>
+		</label>
+
+		<label class="ehven-field">
+			<span>Your Email Again</span>
+			<input
+				type="email"
+				name="email_confirmation"
+				autocomplete="off"
+				maxlength={MESSAGING_FIELD_LIMITS.email}
+				required
+			/>
+		</label>
+	</div>

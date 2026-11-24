@@ -1,0 +1,51 @@
+@layer forms {
+	.ehven-form {
+		inline-size: 100%;
+		max-inline-size: var(--ehven-measure-wide);
+		margin-inline: auto;
+	}
+
+	:where(.ehven-form) [data-form-pair] {
+		display: grid;
+		gap: var(--ehven-space-medium);
+	}
+
+	.ehven-form .ehven-field > span {
+		color: var(--ehven-color-text-emphasis-default);
+		font-size: var(--ehven-text-sm);
+		font-weight: 750;
+		line-height: 1.35;
+	}
+
+	:where(.ehven-form) [data-form-honeypot] {
+		position: absolute;
+		inline-size: 1px;
+		block-size: 1px;
+		overflow: hidden;
+		clip-path: inset(50%);
+		white-space: nowrap;
+	}
+
+	:where(.ehven-form) :is([data-form-status], [data-form-status-verification]) {
+		margin: 0;
+	}
+
+	:where(.ehven-form) :is([data-form-status], [data-form-status-verification])[data-kind='error'] {
+		color: var(--ehven-color-status-danger-text, #8b1a1a);
+	}
+
+	:where(.ehven-form) [data-form-status][data-kind='success'] {
+		color: var(--ehven-color-status-success-text, #176b35);
+	}
+
+	:where(.ehven-form) [data-form-privacy] {
+		color: var(--ehven-color-text-subtle, currentColor);
+		font-size: var(--ehven-text-sm);
+	}
+
+	@media (min-width: 40rem) {
+		:where(.ehven-form) [data-form-pair] {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+	}
+}
