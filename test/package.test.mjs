@@ -7,7 +7,7 @@ import { test } from 'node:test';
 const cwd = resolve(import.meta.dirname, '..');
 
 test('the packed Astro adapter contains its exports, client module and license', () => {
-  const [artifact] = JSON.parse(execFileSync('npm', ['pack', '--json', '--dry-run', '--ignore-scripts'], { cwd, encoding: 'utf8' }));
+  const [artifact] = Object.values(JSON.parse(execFileSync('npm', ['pack', '--json', '--dry-run', '--ignore-scripts'], { cwd, encoding: 'utf8' })));
   const files = artifact.files.map(file => file.path).sort();
   assert.deepEqual(files, [
     'LICENSE',
