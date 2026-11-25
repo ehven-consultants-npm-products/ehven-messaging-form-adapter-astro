@@ -1,7 +1,6 @@
 {
   "name": "@ehven/messaging-form-adapter-astro",
-  "version": "0.1.0-dev.0",
-  "private": true,
+  "version": "0.1.0",
   "type": "module",
   "license": "MIT",
   "description": "Astro components for the portable Ehven messaging form.",
@@ -10,11 +9,22 @@
     "./identity-fields": "./src/MessagingIdentityFields.astro",
     "./messaging.css": "./src/messaging.css"
   },
-  "files": ["src", "README.md"],
-  "sideEffects": ["**/*.astro", "**/*.css", "./src/mount.mjs"],
-  "engines": { "node": ">=24" },
+  "files": [
+    "src/MessagingFormShell.astro",
+    "src/MessagingIdentityFields.astro",
+    "src/messaging.css",
+    "src/mount.mjs"
+  ],
+  "sideEffects": [
+    "**/*.astro",
+    "**/*.css",
+    "./src/mount.mjs"
+  ],
+  "engines": {
+    "node": ">=24"
+  },
   "peerDependencies": {
-    "@ehven/messaging-form-core": "^0.1.0-dev.0",
+    "@ehven/messaging-form-core": "^0.1.0",
     "astro": "^7.3.8"
   },
   "scripts": {
@@ -24,5 +34,12 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ehven-consultants-npm-products/ehven-messaging-form-adapter-astro.git"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "homepage": "https://github.com/ehven-consultants-npm-products/ehven-messaging-form-adapter-astro#readme",
+  "bugs": {
+    "url": "https://github.com/ehven-consultants-npm-products/ehven-messaging-form-adapter-astro/issues"
   }
 }

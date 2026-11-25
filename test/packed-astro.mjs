@@ -13,7 +13,7 @@ const run = (cwd, args) => execFileSync('npm', args, {
   env: { ...process.env, ASTRO_TELEMETRY_DISABLED: '1' },
 });
 const pack = directory => {
-  const [artifact] = JSON.parse(run(directory, ['pack', '--json', '--ignore-scripts', '--pack-destination', fixture]));
+  const [artifact] = Object.values(JSON.parse(run(directory, ['pack', '--json', '--ignore-scripts', '--pack-destination', fixture])));
   return join(fixture, artifact.filename);
 };
 
