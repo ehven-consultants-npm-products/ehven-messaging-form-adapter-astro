@@ -1,6 +1,6 @@
 {
   "name": "@ehven/messaging-form-adapter-astro",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "type": "module",
   "license": "MIT",
   "description": "Astro components for the portable Ehven messaging form.",
