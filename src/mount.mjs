@@ -1,36 +1,43 @@
 import { enhanceMessagingForm } from '@ehven/messaging-form-core/browser';
 
 const scriptUrl = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+const onloadName = 'ehvenMessagingFormTurnstileLoaded';
 const forms = new Map();
 let loader;
 
 function loadTurnstile() {
   loader ??= new Promise((resolve, reject) => {
-    const timeout = setTimeout(() => reject(new Error('Turnstile took too long to initialize.')), 15_000);
-    function ready() {
-      const api = window.turnstile;
-      if (typeof api?.ready !== 'function') {
-        failed();
-        return;
-      }
-      api.ready(() => {
-        clearTimeout(timeout);
-        resolve(api);
-      });
-    }
-    function failed() {
-      clearTimeout(timeout);
-      reject(new Error('Turnstile could not load.'));
-    }
-    if (window.turnstile) {
-      ready();
+    if (typeof window.turnstile?.render === 'function') {
+      resolve(window.turnstile);
       return;
     }
+
+    function cleanup() {
+      clearTimeout(timeout);
+      if (window[onloadName] === loaded) delete window[onloadName];
+    }
+
+    function fail(message) {
+      cleanup();
+      reject(new Error(message));
+    }
+
+    function loaded() {
+      const api = window.turnstile;
+      if (typeof api?.render !== 'function') {
+        fail('Turnstile could not load.');
+        return;
+      }
+      cleanup();
+      resolve(api);
+    }
+
+    const timeout = setTimeout(() => fail('Turnstile took too long to initialize.'), 15_000);
+    window[onloadName] = loaded;
     const script = document.createElement('script');
-    script.src = scriptUrl;
+    script.src = `${scriptUrl}&onload=${onloadName}`;
     script.async = true;
-    script.addEventListener('load', ready, { once: true });
-    script.addEventListener('error', failed, { once: true });
+    script.addEventListener('error', () => fail('Turnstile could not load.'), { once: true });
     document.head.append(script);
   });
   return loader;

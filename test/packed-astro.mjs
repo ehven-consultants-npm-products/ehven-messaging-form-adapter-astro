@@ -66,8 +66,8 @@ import Identity from '@ehven/messaging-form-adapter-astro/identity-fields';
   const removes = [];
   const requests = [];
   Object.assign(globalThis, { window, document, AbortController: window.AbortController });
-  window.turnstile = {
-    ready(callback) { callback(); },
+  const turnstile = {
+    ready() { throw new Error('An asynchronously loaded Turnstile script cannot use ready().'); },
     render(element, options) {
       const id = element.closest('form').id;
       const tokenInput = document.createElement('input');
@@ -93,7 +93,18 @@ import Identity from '@ehven/messaging-form-adapter-astro/identity-fields';
   const bundlePath = join(fixture, 'browser-bundle.mjs');
   await writeFile(bundlePath, code);
   await import(pathToFileURL(bundlePath));
+  const providerScripts = document.querySelectorAll('script[src^="https://challenges.cloudflare.com/turnstile/"]');
+  assert.equal(providerScripts.length, 1);
+  const providerScript = providerScripts[0];
+  const loadCallback = new URL(providerScript.src).searchParams.get('onload');
+  assert.equal(typeof window[loadCallback], 'function');
+  window.turnstile = turnstile;
+  providerScript.dispatchEvent(new window.Event('load'));
   await new Promise(resolve => setImmediate(resolve));
+  assert.equal(widgets.size, 0, 'The script load event must not mount widgets before provider initialization.');
+  window[loadCallback]();
+  await new Promise(resolve => setImmediate(resolve));
+  assert.equal(window[loadCallback], undefined);
   assert.deepEqual([...widgets.keys()], ['one', 'two']);
   assert.equal(widgets.get('one').action, 'contact');
   assert.ok([one, two, off, missingKey].every(form => submit(form).disabled));
